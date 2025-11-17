@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISU EXCELLENCE AWARD Voting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .header h2 {
+            font-size: 1.5em;
+            opacity: 0.9;
+        }
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto 40px;
+        }
+        .candidate-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .candidate-photo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #3498db;
+            margin-bottom: 15px;
+            background: #ecf0f1;
+        }
+        .candidate-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        .candidate-country {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+        .positions-container {
+            text-align: left;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 10px;
+            background: #fafafa;
+        }
+        .position-checkbox {
+            margin: 8px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        .position-checkbox input {
+            margin-right: 8px;
+            transform: scale(1.1);
+            margin-top: 3px;
+        }
+        .position-checkbox label {
+            font-size: 0.8em;
+            cursor: pointer;
+            color: #34495e;
+            line-height: 1.3;
+        }
+        .submit-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        .instructions {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        .vote-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
+        }
+        @media (max-width: 768px) {
+            .candidates-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ISU EXCELLENCE AWARD</h1>
+        <h2>Voting System</h2>
+    </div>
+
+    <div class="instructions">
+        <p>Select the award categories for each candidate you wish to vote for</p>
+    </div>
+
+    <div class="vote-counter" id="voteCounter">Votes: 0</div>
+
+    <div class="candidates-grid" id="candidatesContainer">
+        <!-- Candidates will be loaded here -->
+    </div>
+
+    <div class="submit-section">
+        <button class="submit-btn" onclick="submitVotes()">Submit All Votes</button>
+    </div>
+
+    <script>
+        // Award categories (0-37)
+        const awardCategories = [
+            "ISU Executive Board Member of the Year",
+            "Most Dedicated Volunteer",
+            "Outstanding Cultural Event of the Year",
+            "International Students Athletes of the Year (Football, Volleyball, Basketball)",
+            "Art & Creative Award",
+            "Best Teacher of the Year",
+            "Most Talented Award",
+            "Most Popular Award (Male)",
+            "Most Popular Award (Female)",
+            "Most Active Award",
+            "Best Behavior Award",
+            "Best Cleaning Room Award",
+            "Best Coach Award",
+            "Best Student dancing Award",
+            "Best Photographer award",
+            "Student MC of the Year",
+            "Best Course REP of the Year (Male)",
+            "Best Course REP of the Year (Female)",
+            "Best Artist of the Year",
+            "Student Entrepreneur of the year",
+            "Outstanding graphic designer of the year",
+            "Gentlemen of the Year",
+            "Lady of the Year",
+            "Most fashionable Student (Male)",
+            "Most fashionable Student (Female)",
+            "Social Media Influencer of the year",
+            "Most influential Student of the Year",
+            "Best sports personality of the year",
+            "Best Student in Politics of the year",
+            "Best ISU appointees",
+            "ISU Excellent Award",
+            "Most influential personality of Football, Basketball, and volleyball",
+            "Class Football Team of the year",
+            "Committee/ Department Head of the year",
+            "Best Initiative Award",
+            "Academic Excellent Award (Undergraduate)",
+            "Academic Excellent Award (Graduate)",
+            "International Office Appreciation Award"
+        ];
+
+        // Candidate data from your Excel
+        const candidates = [
+            { name: "EL-KHADIRI MERYEME", country: "Morocco", photo: "photos/EL-KHADIRI_MERYEME.jpg", positions: [0,8,17,20,30,35,37] },
+            { name: "Michelle Okyerebea Asante", country: "GHANA", photo: "photos/Michelle_Okyerebea_Asante.jpg", positions: [1,8,9,10,11,19,22,25] },
+            { name: "Kundayi Nigel Ndoro", country: "ZIMBABWE", photo: "photos/Kundayi_Nigel_Ndoro.jpg", positions: [12,27,31] },
+            { name: "BERRADA SOUHAIL", country: "MOROCCO", photo: "photos/BERRADA_SOUHAIL.jpg", positions: [15,21,23] },
+            { name: "NIGINA", country: "KAZAKHISTAN", photo: "photos/NIGINA.jpg", positions: [8,25] },
+            { name: "Zulfiddin Mehriddinov", country: "UZBEKISTAN", photo: "photos/Zulfiddin_Mehriddinov.jpg", positions: [3,31] },
+            { name: "MUHAMMADOV MUHAMMAD SODIK", country: "UZBEKISTAN", photo: "photos/MUHAMMADOV_MUHAMMAD_SODIK.jpg", positions: [27,31] },
+            { name: "Diaby Khadjaly", country: "GUINEA", photo: "photos/Diaby_Khadjaly.jpg", positions: [14,20,21,30] },
+            { name: "Wisdom Chisom", country: "Nigeria", photo: "photos/Wisdom_Chisom.jpg", positions: [23] },
+            { name: "Kra Kouassi Fedi", country: "Guinea", photo: "photos/Kra_Kouassi_Fedi.jpg", positions: [31] },
+            { name: "Izzatullaev Musulmon", country: "UZBEKISTAN", photo: "photos/Izzatullaev_Musulmon.jpg", positions: [1,9,10] },
+            { name: "Watson Karanda", country: "ZIMBABWE", photo: "photos/Watson_Karanda.jpg", positions: [19] },
+            { name: "Eze Victor", country: "Nigeria", photo: "photos/Eze_Victor.jpg", positions: [19,23] },
+            { name: "Keita Fatumata S", country: "Liberia", photo: "photos/Keita_Fatumata_S.jpg", positions: [15] },
+            { name: "Elma Taimu", country: "Zimbabwe", photo: "photos/Elma_Taimu.jpg", positions: [13] },
+            { name: "Marygold Vimbainashe", country: "ZIMBABWE", photo: "photos/Marygold_Vimbainashe.jpg", positions: [3,31] },
+            { name: "Khoshimov M", country: "UZBEKISTAN", photo: "photos/Khoshimov_M.jpg", positions: [27,31] },
+            { name: "Anika Jannatul Ferdush", country: "BANGLADESH", photo: "photos/Anika_Jannatul_Ferdush.jpg", positions: [1,2,8,9,11,13,22,26,30,34] },
+            { name: "Serhani Anass", country: "MOROCCO", photo: "photos/Serhani_Anass.jpg", positions: [3,27,31] },
+            { name: "Andrew Stephen W", country: "CAMEROON", photo: "photos/Andrew_Stephen_W.jpg", positions: [3,27,31] },
+            { name: "Matola Kenny Jerre", country: "South Africa", photo: "photos/Matola_Kenny_Jerre.jpg", positions: [3] },
+            { name: "Karshygayeva Aiym", country: "KAZAKHISTAN", photo: "photos/Karshygayeva_Aiym.jpg", positions: [6,8,26,36] },
+            { name: "Chatir Soukaina", country: "MOROCCO", photo: "photos/Chatir_Soukaina.jpg", positions: [11,22,27,35] },
+            { name: "Duru Valentine Obinna", country: "Nigeria", photo: "photos/Duru_Valentine_Obinna.jpg", positions: [7] },
+            { name: "Say Kong Tharak", country: "CAMBODIA", photo: "photos/Say_Kong_Tharak.jpg", positions: [2,11] },
+            { name: "Ork Chanchutema", country: "CAMBODIA", photo: "photos/Ork_Chanchutema.jpg", positions: [10,36] },
+            { name: "Kong Mengsean", country: "CAMBODIA", photo: "photos/Kong_Mengsean.jpg", positions: [2,8,9,35,37] },
+            { name: "Clarmancio Nilton Silva Fernandes", country: "Mozambique", photo: "photos/Clarmancio_Nilton_Silva_Fernandes.jpg", positions: [3,27] },
+            { name: "Fixa", country: "MOROCCO", photo: "photos/Fixa.jpg", positions: [25] },
+            { name: "MAMAYUSUPOV ILKHOM", country: "Uzbekistan", photo: "photos/MAMAYUSUPOV_ILKHOM.jpg", positions: [27,31] },
+            { name: "Shaun Nkosinathi NG", country: "South Africa", photo: "photos/Shaun_Nkosinathi_NG.jpg", positions: [18] },
+            { name: "AIT BAHMED FOUZIA", country: "MOROCCO", photo: "photos/AIT_BAHMED_FOUZIA.jpg", positions: [5,6,10,12,22,27,35] },
+            { name: "LUPAHLA SANELE", country: "Zimbabwe", photo: "photos/LUPAHLA_SANELE.jpg", positions: [3,8,9,11,27] },
+            { name: "OFFOR UCHECHI ROSELINE", country: "Nigeria", photo: "photos/OFFOR_UCHECHI_ROSELINE.jpg", positions: [11] },
+            { name: "OUSSOUSS HAMID", country: "MOROCCO", photo: "photos/OUSSOUSS_HAMID.jpg", positions: [2,6,14] },
+            { name: "SOT FA ELIN", country: "CAMBODIA", photo: "photos/SOT_FA_ELIN.jpg", positions: [0,4,9,11,14,20,25,28,30] },
+            { name: "ORA", country: "Rwanda", photo: "photos/ORA.jpg", positions: [11] },
+            { name: "PHIRI EMMANUEL", country: "Zambia", photo: "photos/PHIRI_EMMANUEL.jpg", positions: [1,10] },
+            { name: "COMPUTER SCIENCE", country: "", photo: "photos/COMPUTER_SCIENCE.jpg", positions: [32] },
+            { name: "Mozumder Aktia Pableha", country: "BANGLADESH", photo: "photos/Mozumder_Aktia_Pableha.jpg", positions: [1] },
+            { name: "Bekkaoui Souhaib", country: "Morocco", photo: "photos/Bekkaoui_Souhaib.jpg", positions: [4,13,23,28,34] },
+            { name: "TOURE FRED RYAN", country: "Ivory Coast", photo: "photos/TOURE_FRED_RYAN.jpg", positions: [11,32] },
+            { name: "KUNGNE KALEUK STEEVE JOSUE", country: "Cameroon", photo: "photos/KUNGNE_KALEUK_STEEVE_JOSUE.jpg", positions: [1,35] },
+            { name: "Naphtali Antonio", country: "", photo: "photos/Naphtali_Antonio.jpg", positions: [14] }
+        ];
+
+        function loadCandidates() {
+            const container = document.getElementById('candidatesContainer');
+            container.innerHTML = '';
+
+            candidates.forEach((candidate, index) => {
+                const card = document.createElement('div');
+                card.className = 'candidate-card';
+                
+                card.innerHTML = `
+                    <img src="${candidate.photo}" alt="${candidate.name}" class="candidate-photo" 
+                         onerror="this.src='https://via.placeholder.com/140x140/3498db/white?text=Photo'">
+                    <div class="candidate-name">${candidate.name}</div>
+                    <div class="candidate-country">${candidate.country}</div>
+                    <div class="positions-container" id="positions-${index}">
+                        <!-- Positions will be loaded by JavaScript -->
+                    </div>
+                `;
+                
+                container.appendChild(card);
+                
+                // Load positions for this candidate
+                loadCandidatePositions(index, candidate.positions);
+            });
+            
+            updateVoteCounter();
+        }
+
+        function loadCandidatePositions(candidateIndex, candidatePositions) {
+            const container = document.getElementById(`positions-${candidateIndex}`);
+            
+            candidatePositions.forEach(positionIndex => {
+                if (positionIndex >= 0 && positionIndex < awardCategories.length) {
+                    const checkboxDiv = document.createElement('div');
+                    checkboxDiv.className = 'position-checkbox';
+                    
+                    checkboxDiv.innerHTML = `
+                        <input type="checkbox" id="c${candidateIndex}-p${positionIndex}" 
+                               onchange="updateVoteCounter()">
+                        <label for="c${candidateIndex}-p${positionIndex}">${awardCategories[positionIndex]}</label>
+                    `;
+                    
+                    container.appendChild(checkboxDiv);
+                }
+            });
+        }
+
+        function updateVoteCounter() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let checkedCount = 0;
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) checkedCount++;
+            });
+            
+            document.getElementById('voteCounter').textContent = `Votes: ${checkedCount}`;
+        }
+
+        function submitVotes() {
+            const votes = {};
+            let totalVotes = 0;
+            
+            // Collect all votes
+            candidates.forEach((candidate, candidateIndex) => {
+                candidate.positions.forEach(positionIndex => {
+                    const checkbox = document.getElementById(`c${candidateIndex}-p${positionIndex}`);
+                    if (checkbox && checkbox.checked) {
+                        const category = awardCategories[positionIndex];
+                        if (!votes[category]) votes[category] = [];
+                        votes[category].push(candidate.name);
+                        totalVotes++;
+                    }
+                });
+            });
+            
+            if (totalVotes === 0) {
+                alert('Please select at least one vote before submitting.');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('isu_votes', JSON.stringify(votes));
+            localStorage.setItem('isu_vote_time', Date.now().toString());
+            
+            // Show confirmation
+            let message = `Success! You submitted ${totalVotes} vote(s).\n\n`;
+            message += 'Your votes have been recorded.';
+            
+            alert(message);
+        }
+
+        // Initialize
+        window.addEventListener('load', function() {
+            loadCandidates();
+        });
+    </script>
+</body>
+</html>
