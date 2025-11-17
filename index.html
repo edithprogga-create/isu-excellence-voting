@@ -136,6 +136,29 @@
             font-weight: bold;
             box-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
         }
+        /* ADMIN STYLES */
+        .admin-btn {
+            background: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .admin-btn:hover {
+            background: #2980b9;
+        }
+        .vote-results {
+            background: white;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            border: 2px solid #3498db;
+            max-height: 500px;
+            overflow-y: auto;
+        }
         @media (max-width: 768px) {
             .candidates-grid {
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -165,6 +188,14 @@
 
     <div class="submit-section">
         <button class="submit-btn" onclick="submitVotes()">Submit All Votes</button>
+    </div>
+
+    <!-- ADMIN SECTION -->
+    <div class="admin-section" style="text-align: center; margin: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+        <h3>Admin Functions</h3>
+        <button onclick="viewAllVotes()" class="admin-btn">📊 View All Collected Votes</button>
+        <button onclick="exportVotes()" class="admin-btn">📥 Export Votes to File</button>
+        <button onclick="clearAllVotes()" class="admin-btn" style="background: #e74c3c;">🗑️ Clear All Votes</button>
     </div>
 
     <script>
@@ -316,7 +347,7 @@
         }
 
         function submitVotes() {
-            const votes = {};
+            const votes = JSON.parse(localStorage.getItem('isu_votes')) || {};
             let totalVotes = 0;
             
             // Collect all votes
@@ -342,11 +373,121 @@
             localStorage.setItem('isu_vote_time', Date.now().toString());
             
             // Show confirmation
-            let message = `Success! You submitted ${totalVotes} vote(s).\n\n`;
-            message += 'Your votes have been recorded.';
+            alert(`✅ Success! ${totalVotes} vote(s) submitted!\n\nYou can view all collected votes using the "View All Collected Votes" button.`);
             
-            alert(message);
+            // Clear selections
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateVoteCounter();
         }
+
+        // ================= ADMIN FUNCTIONS =================
+        function viewAllVotes() {
+            const votes = JSON.parse(localStorage.getItem('isu_votes')) || {};
+            
+            if (Object.keys(votes).length === 0) {
+                alert('No votes have been collected yet.');
+                return;
+            }
+            
+            let resultsHTML = `
+                <div class="vote-results">
+                    <h3>📊 ISU VOTING RESULTS - TOTAL VOTES COLLECTED</h3>
+                    <div style="text-align: right; margin-bottom: 15px;">
+                        <button onclick="closeResults()" style="background: #e74c3c; color: white; padding: 5px 10px; border: none; border-radius: 3px;">Close</button>
+                    </div>
+            `;
+            
+            let totalVotes = 0;
+            Object.values(votes).forEach(candidates => {
+                totalVotes += candidates.length;
+            });
+            
+            resultsHTML += `<h4>Total Votes Cast: ${totalVotes}</h4>`;
+            
+            Object.entries(votes).forEach(([category, candidates]) => {
+                resultsHTML += `
+                    <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <h4 style="color: #2c3e50; margin-bottom: 10px;">🏆 ${category}</h4>
+                        <div style="margin-left: 20px;">
+                `;
+                
+                const candidateCounts = {};
+                candidates.forEach(candidate => {
+                    candidateCounts[candidate] = (candidateCounts[candidate] || 0) + 1;
+                });
+                
+                Object.entries(candidateCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .forEach(([candidate, count]) => {
+                        resultsHTML += `
+                            <div style="display: flex; justify-content: between; margin: 5px 0;">
+                                <span>${candidate}</span>
+                                <span style="margin-left: auto; background: #3498db; color: white; padding: 2px 8px; border-radius: 10px; font-weight: bold;">
+                                    ${count} vote${count > 1 ? 's' : ''}
+                                </span>
+                            </div>
+                        `;
+                    });
+                
+                resultsHTML += `</div></div>`;
+            });
+            
+            resultsHTML += `</div>`;
+            
+            const resultsDiv = document.createElement('div');
+            resultsDiv.innerHTML = resultsHTML;
+            resultsDiv.style.position = 'fixed';
+            resultsDiv.style.top = '50%';
+            resultsDiv.style.left = '50%';
+            resultsDiv.style.transform = 'translate(-50%, -50%)';
+            resultsDiv.style.width = '80%';
+            resultsDiv.style.maxWidth = '800px';
+            resultsDiv.style.maxHeight = '80vh';
+            resultsDiv.style.overflow = 'auto';
+            resultsDiv.style.backgroundColor = 'white';
+            resultsDiv.style.zIndex = '1000';
+            resultsDiv.style.boxShadow = '0 0 20px rgba(0,0,0,0.3)';
+            resultsDiv.id = 'voteResults';
+            
+            document.body.appendChild(resultsDiv);
+        }
+
+        function closeResults() {
+            const resultsDiv = document.getElementById('voteResults');
+            if (resultsDiv) {
+                resultsDiv.remove();
+            }
+        }
+
+        function exportVotes() {
+            const votes = JSON.parse(localStorage.getItem('isu_votes')) || {};
+            const data = JSON.stringify(votes, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `isu-votes-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('Votes exported successfully!');
+        }
+
+        function clearAllVotes() {
+            if (confirm('⚠️ ARE YOU SURE? This will delete ALL collected votes permanently!')) {
+                localStorage.removeItem('isu_votes');
+                alert('All votes have been cleared.');
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            if (event.target.id === 'voteResults') {
+                closeResults();
+            }
+        });
 
         // Initialize
         window.addEventListener('load', function() {
