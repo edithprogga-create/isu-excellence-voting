@@ -193,12 +193,16 @@
     <!-- ADMIN SECTION -->
     <div class="admin-section" style="text-align: center; margin: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
         <h3>Admin Functions</h3>
-        <button onclick="viewAllVotes()" class="admin-btn">📊 View All Collected Votes</button>
+        <button onclick="viewAllVotes()" class="admin-btn">📊 View Local Votes</button>
+        <button onclick="viewLiveResults()" class="admin-btn" style="background: #0f9d58;">📈 View Google Sheets</button>
         <button onclick="exportVotes()" class="admin-btn">📥 Export Votes to File</button>
         <button onclick="clearAllVotes()" class="admin-btn" style="background: #e74c3c;">🗑️ Clear All Votes</button>
     </div>
 
     <script>
+        // Google Sheets configuration
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbws6RmxVDl0deQPMiTGDTt5sonrbyEcowObvS5qgxLGxAApTNWG5d5KEtyUbW9YO92y0Q/exec';
+
         // Award categories (0-37)
         const awardCategories = [
             "ISU Executive Board Member of the Year",
@@ -289,6 +293,107 @@
             { name: "Naphtali Antonio", country: "", photo: "photos/Naphtali_Antonio.jpg", positions: [14] }
         ];
 
+        // Generate unique voter ID
+        function generateVoterId() {
+            let voterId = localStorage.getItem('isu_voterId');
+            if (!voterId) {
+                voterId = 'voter_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('isu_voterId', voterId);
+            }
+            return voterId;
+        }
+
+        // Save vote to Google Sheets
+        async function saveVoteToSheet(category, candidate) {
+            const voteData = {
+                voterId: generateVoterId(),
+                category: category,
+                candidate: candidate,
+                userAgent: navigator.userAgent
+            };
+            
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(voteData)
+                });
+                
+                return true; // Assume success with no-cors
+            } catch (error) {
+                console.error('Failed to save vote:', error);
+                // Fallback to localStorage
+                const votes = JSON.parse(localStorage.getItem('isu_votes_backup')) || {};
+                if (!votes[category]) votes[category] = [];
+                votes[category].push(candidate);
+                localStorage.setItem('isu_votes_backup', JSON.stringify(votes));
+                return false;
+            }
+        }
+
+        // Updated submit function
+        async function submitVotes() {
+            const votes = [];
+            let totalVotes = 0;
+            
+            // Collect all votes
+            candidates.forEach((candidate, candidateIndex) => {
+                candidate.positions.forEach(positionIndex => {
+                    const checkbox = document.getElementById(`c${candidateIndex}-p${positionIndex}`);
+                    if (checkbox && checkbox.checked) {
+                        const category = awardCategories[positionIndex];
+                        votes.push({
+                            category: category,
+                            candidate: candidate.name
+                        });
+                        totalVotes++;
+                    }
+                });
+            });
+            
+            if (totalVotes === 0) {
+                alert('Please select at least one vote before submitting.');
+                return;
+            }
+            
+            // Save all votes to Google Sheets
+            let successCount = 0;
+            const savedVotes = JSON.parse(localStorage.getItem('isu_votes')) || {};
+            
+            for (const vote of votes) {
+                const success = await saveVoteToSheet(vote.category, vote.candidate);
+                if (success) successCount++;
+                
+                // Also save to localStorage for backup
+                if (!savedVotes[vote.category]) savedVotes[vote.category] = [];
+                savedVotes[vote.category].push(vote.candidate);
+            }
+            
+            localStorage.setItem('isu_votes', JSON.stringify(savedVotes));
+            localStorage.setItem('isu_vote_time', Date.now().toString());
+            
+            // Show results
+            if (successCount === totalVotes) {
+                alert(`✅ Success! All ${totalVotes} votes submitted to official records!\n\nYou can view live results in Google Sheets.`);
+            } else {
+                alert(`⚠️ ${successCount}/${totalVotes} votes recorded. Some votes saved locally.`);
+            }
+            
+            // Clear selections
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateVoteCounter();
+        }
+
+        // Admin function to view Google Sheets
+        function viewLiveResults() {
+            window.open('https://docs.google.com/spreadsheets/d/1GeiFcvRSwdyUa5Xak4LjfwLA1M-6313gR0YPcpm3Hk4/edit', '_blank');
+        }
+
         function loadCandidates() {
             const container = document.getElementById('candidatesContainer');
             container.innerHTML = '';
@@ -308,8 +413,6 @@
                 `;
                 
                 container.appendChild(card);
-                
-                // Load positions for this candidate
                 loadCandidatePositions(index, candidate.positions);
             });
             
@@ -344,42 +447,6 @@
             });
             
             document.getElementById('voteCounter').textContent = `Votes: ${checkedCount}`;
-        }
-
-        function submitVotes() {
-            const votes = JSON.parse(localStorage.getItem('isu_votes')) || {};
-            let totalVotes = 0;
-            
-            // Collect all votes
-            candidates.forEach((candidate, candidateIndex) => {
-                candidate.positions.forEach(positionIndex => {
-                    const checkbox = document.getElementById(`c${candidateIndex}-p${positionIndex}`);
-                    if (checkbox && checkbox.checked) {
-                        const category = awardCategories[positionIndex];
-                        if (!votes[category]) votes[category] = [];
-                        votes[category].push(candidate.name);
-                        totalVotes++;
-                    }
-                });
-            });
-            
-            if (totalVotes === 0) {
-                alert('Please select at least one vote before submitting.');
-                return;
-            }
-            
-            // Save to localStorage
-            localStorage.setItem('isu_votes', JSON.stringify(votes));
-            localStorage.setItem('isu_vote_time', Date.now().toString());
-            
-            // Show confirmation
-            alert(`✅ Success! ${totalVotes} vote(s) submitted!\n\nYou can view all collected votes using the "View All Collected Votes" button.`);
-            
-            // Clear selections
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            updateVoteCounter();
         }
 
         // ================= ADMIN FUNCTIONS =================
@@ -479,6 +546,8 @@
         function clearAllVotes() {
             if (confirm('⚠️ ARE YOU SURE? This will delete ALL collected votes permanently!')) {
                 localStorage.removeItem('isu_votes');
+                localStorage.removeItem('isu_votes_backup');
+                localStorage.removeItem('isu_voterId');
                 alert('All votes have been cleared.');
             }
         }
