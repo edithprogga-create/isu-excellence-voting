@@ -3,352 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISU Excellence Award Voting System</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>ISU EXCELLENCE AWARD Voting</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            color: #333;
-            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
             padding: 20px;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
+        .header {
             text-align: center;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
             color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-
-        h1 {
-            font-size: 2.8rem;
+        .header h1 {
+            font-size: 2.5em;
             margin-bottom: 10px;
         }
-
-        h2 {
-            font-size: 1.5rem;
-            font-weight: 400;
+        .header h2 {
+            font-size: 1.5em;
+            opacity: 0.9;
         }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
+        .category-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
             border-radius: 15px;
             padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: none;
         }
-
-        .instructions {
-            text-align: center;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
+        .category-container.active {
+            display: block;
         }
-
-        .warning {
-            color: #e74c3c;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .progress-container {
-            margin: 25px 0;
-        }
-
-        .progress-bar {
-            height: 12px;
-            background-color: #ecf0f1;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #2ecc71, #27ae60);
-            border-radius: 6px;
-            transition: width 0.5s ease;
-        }
-
-        .progress-text {
-            text-align: center;
-            margin-top: 10px;
-            font-weight: 600;
-        }
-
         .category-title {
-            font-size: 1.6rem;
-            color: #2c3e50;
-            margin-bottom: 15px;
+            font-size: 1.8em;
+            font-weight: bold;
             text-align: center;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
+            margin-bottom: 10px;
+            color: #2c3e50;
         }
-
+        .category-description {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
         .candidates-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin: 25px 0;
+            margin-bottom: 30px;
         }
-
-        .candidate-card {
-            background: white;
-            border-radius: 10px;
+        .candidate-option {
+            background: #f8f9fa;
+            border-radius: 12px;
             padding: 20px;
             text-align: center;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 3px solid transparent;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        .candidate-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        .candidate-option:hover {
+            border-color: #3498db;
+            background: #e3f2fd;
+            transform: translateY(-3px);
         }
-
-        .candidate-card.selected {
+        .candidate-option.selected {
             border-color: #27ae60;
-            background-color: #e8f6f3;
+            background: #e8f5e8;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+            transform: translateY(-2px);
         }
-
         .candidate-photo {
             width: 120px;
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            margin: 0 auto 15px;
             border: 4px solid #3498db;
-            background-color: #ecf0f1;
+            margin-bottom: 12px;
+            background: #ecf0f1;
         }
-
         .candidate-name {
-            font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.1em;
+            font-weight: bold;
             margin-bottom: 5px;
+            color: #2c3e50;
         }
-
         .candidate-country {
             color: #7f8c8d;
-            font-size: 0.9rem;
+            font-size: 0.9em;
+            margin-bottom: 10px;
         }
-
         .navigation {
             display: flex;
             justify-content: space-between;
             margin-top: 30px;
         }
-
-        .btn {
+        .nav-btn {
+            background: #3498db;
+            color: white;
             padding: 12px 25px;
             border: none;
             border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 1em;
+            transition: all 0.3s;
         }
-
-        .btn-primary {
-            background: #3498db;
-            color: white;
-        }
-
-        .btn-primary:hover {
+        .nav-btn:hover {
             background: #2980b9;
+            transform: translateY(-2px);
         }
-
-        .btn-success {
-            background: #27ae60;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #219653;
-        }
-
-        .btn:disabled {
+        .nav-btn:disabled {
             background: #bdc3c7;
             cursor: not-allowed;
+            transform: none;
         }
-
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .progress-text {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
         .submit-section {
             text-align: center;
             margin: 30px 0;
             display: none;
         }
-
-        .admin-section {
-            margin-top: 40px;
-            border-top: 2px dashed #bdc3c7;
-            padding-top: 30px;
+        .submit-section.active {
+            display: block;
         }
-
-        .admin-title {
+        .submit-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        .instructions {
             text-align: center;
-            font-size: 1.5rem;
+            color: #7f8c8d;
             margin-bottom: 20px;
+            font-size: 1.1em;
         }
-
-        .admin-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
+        /* ADMIN STYLES */
+        .admin-section {
+            text-align: center;
+            margin: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
-
         .admin-btn {
-            background: #9b59b6;
+            background: #3498db;
             color: white;
             padding: 12px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
+            margin: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 14px;
         }
-
         .admin-btn:hover {
-            background: #8e44ad;
+            background: #2980b9;
         }
-
-        .admin-btn.view {
-            background: #3498db;
-        }
-
-        .admin-btn.reset {
-            background: #f39c12;
-        }
-
-        .admin-btn.clear {
-            background: #e74c3c;
-        }
-
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
+        /* Deadline Banner */
+        .deadline-banner {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
             font-weight: bold;
-            margin-left: 10px;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
-
-        .status-online {
-            background: #27ae60;
-            color: white;
+        .deadline-banner.ended {
+            background: linear-gradient(135deg, #7f8c8d, #95a5a6);
         }
-
-        .status-offline {
+        .deadline-banner.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        /* Vote Results Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+        }
+        .modal-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .close-btn {
             background: #e74c3c;
             color: white;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
+            border: none;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .close-btn:hover {
+            background: #c0392b;
         }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .candidates-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-            
-            .admin-buttons {
-                flex-direction: column;
-            }
+        .vote-results {
+            margin-top: 20px;
+        }
+        .vote-category {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 5px solid #3498db;
+        }
+        .vote-category-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .vote-candidate {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border: 1px solid #e9ecef;
+        }
+        .vote-candidate.winner {
+            background: #e8f5e8;
+            border-color: #27ae60;
+            font-weight: bold;
+        }
+        /* Already Voted Message */
+        .already-voted {
+            text-align: center;
+            background: #e8f5e8;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 3px solid #27ae60;
+        }
+        .already-voted h3 {
+            color: #27ae60;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>ISU EXCELLENCE AWARD</h1>
-            <h2>Category-Based Voting System 
-                <span id="connectionStatus" class="status-badge status-offline">CHECKING...</span>
-            </h2>
-        </header>
+    <!-- Deadline Banner -->
+    <div class="deadline-banner" id="deadlineBanner">
+        ⏰ Voting Ends: <span id="deadlineText"></span>
+    </div>
 
-        <div class="card">
-            <div class="instructions">
-                <p>Vote for ONE candidate in each category. Navigate through categories using Next/Previous buttons.</p>
-                <p class="warning"><i class="fas fa-exclamation-triangle"></i> You can only vote once per device!</p>
-            </div>
+    <div class="header">
+        <h1>ISU EXCELLENCE AWARD</h1>
+        <h2>Category-Based Voting System</h2>
+    </div>
 
-            <div class="progress-container">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                </div>
-                <div class="progress-text" id="progressText">Category 1 of 38</div>
-            </div>
+    <div class="instructions">
+        <p>Vote for ONE candidate in each category. Navigate through categories using Next/Previous buttons.</p>
+        <p style="color: #e74c3c; font-weight: bold;">⚠️ You can only vote once per device!</p>
+    </div>
 
-            <div id="categoriesContainer">
-                <!-- Categories will load here -->
-            </div>
+    <!-- Already Voted Message -->
+    <div class="already-voted" id="alreadyVotedMessage" style="display: none;">
+        <h3>✅ Thank You For Voting!</h3>
+        <p>You have already submitted your votes. Each person can only vote once.</p>
+        <p>Results will be announced after the voting deadline.</p>
+    </div>
 
-            <div class="submit-section" id="submitSection">
-                <button class="btn btn-success" id="submitButton" onclick="submitVotes()">
-                    <i class="fas fa-paper-plane"></i> Submit All Votes to Google Sheets
-                </button>
-                <p style="margin-top: 10px; color: #7f8c8d;">
-                    You've voted in <span id="votesCount">0</span> categories
-                </p>
-            </div>
-        </div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">Category 1 of 34</div>
 
-        <!-- Admin Section -->
-        <div class="card admin-section">
-            <div class="admin-title">
-                <i class="fas fa-user-shield"></i> Admin Functions
+    <div id="categoriesContainer">
+        <!-- Categories will be loaded here one at a time -->
+    </div>
+
+    <div class="submit-section" id="submitSection">
+        <button class="submit-btn" onclick="submitVotes()">Submit All Votes</button>
+    </div>
+
+    <!-- ADMIN SECTION -->
+    <div class="admin-section">
+        <h3>Admin Functions</h3>
+        <button onclick="viewAllVotes()" class="admin-btn">📊 View All Votes</button>
+        <button onclick="viewLiveResults()" class="admin-btn" style="background: #0f9d58;">📈 View Google Sheets</button>
+        <button onclick="resetForNewVoter()" class="admin-btn" style="background: #9b59b6;">🔄 New Voter</button>
+        <button onclick="clearAllVotes()" class="admin-btn" style="background: #e74c3c;">🗑️ Clear All Votes</button>
+        <button onclick="extendDeadline()" class="admin-btn" style="background: #f39c12;">⏰ Extend Deadline</button>
+        <button onclick="viewVotingStats()" class="admin-btn" style="background: #8e44ad;">📈 Voting Stats</button>
+    </div>
+
+    <!-- Vote Results Modal -->
+    <div class="modal" id="voteResultsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📊 All Vote Results</div>
+                <button class="close-btn" onclick="closeModal()">×</button>
             </div>
-            <div class="admin-buttons">
-                <button class="admin-btn view" onclick="viewAllVotes()">
-                    <i class="fas fa-chart-bar"></i> View All Votes
-                </button>
-                <button class="admin-btn reset" onclick="resetForNewVoter()">
-                    <i class="fas fa-sync-alt"></i> New Voter
-                </button>
-                <button class="admin-btn clear" onclick="clearAllVotes()">
-                    <i class="fas fa-trash-alt"></i> Clear All Votes
-                </button>
-                <button class="admin-btn view" onclick="downloadVotes()">
-                    <i class="fas fa-download"></i> Download Votes
-                </button>
-                <button class="admin-btn view" onclick="testGoogleSheets()">
-                    <i class="fas fa-plug"></i> Test Connection
-                </button>
+            <div class="vote-results" id="voteResultsContent">
+                <!-- Vote results will be loaded here -->
             </div>
         </div>
     </div>
 
     <script>
-        // ✅ YOUR NEW GOOGLE APPS SCRIPT URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdFj9dQcK2T8VObvQHFl3NNp-kj80_BmnQBDX4QXG2S-dY2e2tKCCzFAdwj0y5OLBVug/exec';
+        // Google Sheets configuration
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbws6RmxVDl0deQPMiTGDTt5sonrbyEcowObvS5qgxLGxAApTNWG5d5KEtyUbW9YO92y0Q/exec';
 
-        // Award categories
+        // VOTING DEADLINE - 3 days from now
+        const VOTING_DURATION_DAYS = 3;
+        let VOTING_DEADLINE = new Date(Date.now() + VOTING_DURATION_DAYS * 24 * 60 * 60 * 1000).getTime();
+
+        // Award categories (only categories with nominees)
         const awardCategories = [
             "ISU Executive Board Member of the Year",
             "Most Dedicated Volunteer",
@@ -390,7 +419,7 @@
             "International Office Appreciation Award"
         ];
 
-        // COMPLETE CANDIDATE DATA - All 54 candidates from your Excel file
+        // Candidate data with ALL nominees
         const candidates = [
             { name: "EL-KHADIRI MERYEME", country: "Morocco", photo: "photos/EL-KHADIRI_MERYEME.jpg", positions: [0,8,17,20,30,35,37] },
             { name: "Michelle Okyerebea Asante", country: "GHANA", photo: "photos/Michelle_Okyerebea_Asante.jpg", positions: [1,8,9,10,11,19,22,25] },
@@ -425,7 +454,7 @@
             { name: "Shaun Nkosinathi NG", country: "South Africa", photo: "photos/Shaun_Nkosinathi_NG.jpg", positions: [18] },
             { name: "AIT BAHMED FOUZIA", country: "MOROCCO", photo: "photos/AIT_BAHMED_FOUZIA.jpg", positions: [5,6,10,12,22,27,35] },
             { name: "LUPAHLA SANELE", country: "Zimbabwe", photo: "photos/LUPAHLA_SANELE.jpg", positions: [3,8,9,11,27] },
-            { name: "OFFOR UCHECHI ROSELINE", country: "Nigeria", photo: "photos/OFFOR_UCHECHI_ROSELINE.jpg", positions: [11] },
+            { name: "OFFOR UCHECHI ROSELINE", country: "Nigeria", photo: "photos/OFFOR_UCHECHI_ROSE.jpg", positions: [11] },
             { name: "OUSSOUSS HAMID", country: "MOROCCO", photo: "photos/OUSSOUSS_HAMID.jpg", positions: [2,6,14] },
             { name: "SOT FA ELIN", country: "CAMBODIA", photo: "photos/SOT_FA_ELIN.jpg", positions: [0,4,9,11,14,20,25,28,30] },
             { name: "ORA", country: "Rwanda", photo: "photos/ORA.jpg", positions: [11] },
@@ -448,105 +477,187 @@
 
         let currentCategoryIndex = 0;
         let votes = {};
+        let votingEnded = false;
         let hasVoted = localStorage.getItem('hasVoted') === 'true';
-        let googleSheetsConnected = false;
 
-        // Initialize the voting system
-        function init() {
-            console.log("Voting system initialized!");
-            loadCurrentCategory();
+        // Filter categories to only include those with nominees
+        function getActiveCategories() {
+            const activeCategories = [];
+            const categoryHasCandidates = new Array(awardCategories.length).fill(false);
             
-            // Load saved votes if any
-            const savedVotes = localStorage.getItem('votes');
-            if (savedVotes) {
-                votes = JSON.parse(savedVotes);
-                updateProgress();
+            candidates.forEach(candidate => {
+                candidate.positions.forEach(position => {
+                    if (position >= 0 && position < awardCategories.length) {
+                        categoryHasCandidates[position] = true;
+                    }
+                });
+            });
+            
+            const categoryMapping = [];
+            let newIndex = 0;
+            
+            for (let i = 0; i < awardCategories.length; i++) {
+                if (categoryHasCandidates[i]) {
+                    activeCategories.push(awardCategories[i]);
+                    categoryMapping[i] = newIndex;
+                    newIndex++;
+                } else {
+                    categoryMapping[i] = -1;
+                }
             }
-
-            // Test Google Sheets connection
-            testGoogleSheets();
+            
+            return { activeCategories, categoryMapping };
         }
 
-        // Test Google Sheets connection
-        async function testGoogleSheets() {
-            const statusElement = document.getElementById('connectionStatus');
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                if (response.ok) {
-                    googleSheetsConnected = true;
-                    statusElement.textContent = 'GOOGLE SHEETS CONNECTED';
-                    statusElement.className = 'status-badge status-online';
-                    console.log('✅ Google Sheets connection: SUCCESS');
-                    
-                    // Update button text
-                    document.getElementById('submitButton').innerHTML = '<i class="fas fa-paper-plane"></i> Submit All Votes to Google Sheets';
-                } else {
-                    throw new Error('Connection failed');
-                }
-            } catch (error) {
-                googleSheetsConnected = false;
-                statusElement.textContent = 'OFFLINE MODE';
-                statusElement.className = 'status-badge status-offline';
-                console.log('❌ Google Sheets connection: FAILED - Using offline mode');
+        const { activeCategories, categoryMapping } = getActiveCategories();
+
+        // Update candidate positions to match new category indices
+        const updatedCandidates = candidates.map(candidate => {
+            const updatedPositions = candidate.positions
+                .map(oldPos => categoryMapping[oldPos])
+                .filter(newPos => newPos !== -1);
+            
+            return {
+                ...candidate,
+                positions: updatedPositions
+            };
+        });
+
+        // Check voting deadline and update countdown
+        function checkDeadline() {
+            const now = new Date().getTime();
+            const timeLeft = VOTING_DEADLINE - now;
+
+            if (timeLeft <= 0) {
+                votingEnded = true;
+                document.getElementById('deadlineBanner').classList.add('ended');
+                document.getElementById('deadlineText').textContent = 'Voting Has Ended!';
+                disableVoting();
+            } else {
+                // Update countdown display
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                 
-                // Update button text
-                document.getElementById('submitButton').innerHTML = '<i class="fas fa-paper-plane"></i> Submit All Votes (Offline)';
+                let countdownText = '';
+                if (days > 0) {
+                    countdownText = `${days} day${days > 1 ? 's' : ''}, ${hours} hour${hours > 1 ? 's' : ''} remaining`;
+                    if (days === 1) {
+                        document.getElementById('deadlineBanner').classList.add('warning');
+                    }
+                } else if (hours > 0) {
+                    countdownText = `${hours} hour${hours > 1 ? 's' : ''}, ${minutes} minute${minutes > 1 ? 's' : ''} remaining`;
+                    document.getElementById('deadlineBanner').classList.add('warning');
+                } else {
+                    countdownText = `${minutes} minute${minutes > 1 ? 's' : ''} remaining`;
+                    document.getElementById('deadlineBanner').classList.add('warning');
+                }
+                
+                document.getElementById('deadlineText').textContent = countdownText;
+                
+                // Update every minute
+                setTimeout(checkDeadline, 60000);
             }
+        }
+
+        // Disable voting when deadline passes or user has already voted
+        function disableVoting() {
+            const voteButtons = document.querySelectorAll('.candidate-option');
+            voteButtons.forEach(button => {
+                button.style.cursor = 'not-allowed';
+                button.style.opacity = '0.6';
+                button.onclick = null;
+            });
+            
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(button => {
+                button.disabled = true;
+                button.style.cursor = 'not-allowed';
+            });
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+            }
+            
+            document.querySelector('.instructions').innerHTML = 
+                '<p style="color: #e74c3c;">⚠️ Voting has ended. Thank you for participating!</p>';
+        }
+
+        // Show already voted message
+        function showAlreadyVoted() {
+            document.getElementById('alreadyVotedMessage').style.display = 'block';
+            document.getElementById('categoriesContainer').style.display = 'none';
+            document.getElementById('submitSection').style.display = 'none';
+            document.querySelector('.progress-bar').style.display = 'none';
+            document.querySelector('.progress-text').style.display = 'none';
+        }
+
+        // Reset for new voter (Admin function)
+        function resetForNewVoter() {
+            if (votingEnded) {
+                alert('Voting has ended. Cannot start new voting session.');
+                return;
+            }
+            votes = {};
+            currentCategoryIndex = 0;
+            hasVoted = false;
+            localStorage.removeItem('hasVoted');
+            document.getElementById('submitSection').classList.remove('active');
+            document.getElementById('alreadyVotedMessage').style.display = 'none';
+            document.getElementById('categoriesContainer').style.display = 'block';
+            document.querySelector('.progress-bar').style.display = 'block';
+            document.querySelector('.progress-text').style.display = 'block';
+            loadCurrentCategory();
+            updateProgress();
+            alert('✅ Ready for new voter! Previous votes cleared.');
         }
 
         // Load current category
         function loadCurrentCategory() {
-            if (hasVoted) {
-                showAlreadyVoted();
+            if (hasVoted || votingEnded) {
+                if (hasVoted) showAlreadyVoted();
                 return;
             }
 
             const container = document.getElementById('categoriesContainer');
-            const category = awardCategories[currentCategoryIndex];
+            const category = activeCategories[currentCategoryIndex];
             
-            const categoryCandidates = candidates.filter(candidate => 
+            const categoryCandidates = updatedCandidates.filter(candidate => 
                 candidate.positions.includes(currentCategoryIndex)
             );
 
-            // If no candidates in this category, skip to next
-            if (categoryCandidates.length === 0) {
-                if (currentCategoryIndex < awardCategories.length - 1) {
-                    currentCategoryIndex++;
-                    loadCurrentCategory();
-                }
-                return;
-            }
-
             container.innerHTML = `
-                <div class="category-title">${category}</div>
-                <div class="category-description">
-                    Select ONE winner from ${categoryCandidates.length} candidate(s)
-                </div>
-                
-                <div class="candidates-grid">
-                    ${categoryCandidates.map((candidate, index) => `
-                        <div class="candidate-card" onclick="selectCandidate(${currentCategoryIndex}, '${candidate.name.replace(/'/g, "\\'")}')">
-                            <img src="${candidate.photo}" alt="${candidate.name}" class="candidate-photo" 
-                                 onerror="this.src='https://via.placeholder.com/120x120/3498db/white?text=Photo'">
-                            <div class="candidate-name">${candidate.name}</div>
-                            <div class="candidate-country">${candidate.country}</div>
-                        </div>
-                    `).join('')}
-                </div>
-                
-                <div class="navigation">
-                    <button class="btn btn-primary" onclick="previousCategory()" ${currentCategoryIndex === 0 ? 'disabled' : ''}>
-                        <i class="fas fa-arrow-left"></i> Previous
-                    </button>
-                    <button class="btn btn-primary" onclick="nextCategory()">
-                        ${currentCategoryIndex === awardCategories.length - 1 ? 'Finish' : 'Next'} <i class="fas fa-arrow-right"></i>
-                    </button>
+                <div class="category-container active">
+                    <div class="category-title">${category}</div>
+                    <div class="category-description">
+                        Select ONE winner from ${categoryCandidates.length} candidate(s)
+                    </div>
+                    
+                    <div class="candidates-grid">
+                        ${categoryCandidates.map((candidate, index) => `
+                            <div class="candidate-option" onclick="selectCandidate(${currentCategoryIndex}, '${candidate.name}')">
+                                <img src="${candidate.photo}" alt="${candidate.name}" class="candidate-photo" 
+                                     onerror="this.src='https://via.placeholder.com/120x120/3498db/white?text=Photo'">
+                                <div class="candidate-name">${candidate.name}</div>
+                                <div class="candidate-country">${candidate.country}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="navigation">
+                        <button class="nav-btn" onclick="previousCategory()" ${currentCategoryIndex === 0 ? 'disabled' : ''}>
+                            ← Previous
+                        </button>
+                        <button class="nav-btn" onclick="nextCategory()">
+                            ${currentCategoryIndex === activeCategories.length - 1 ? 'Finish' : 'Next →'}
+                        </button>
+                    </div>
                 </div>
             `;
 
             updateProgress();
             
-            // Highlight any previously selected candidate
             if (votes[currentCategoryIndex]) {
                 highlightSelectedCandidate(currentCategoryIndex, votes[currentCategoryIndex]);
             }
@@ -554,28 +665,33 @@
 
         // Select candidate for category
         function selectCandidate(categoryIndex, candidateName) {
+            if (votingEnded || hasVoted) {
+                alert('Voting is not allowed at this time.');
+                return;
+            }
             votes[categoryIndex] = candidateName;
             highlightSelectedCandidate(categoryIndex, candidateName);
             updateProgress();
-            saveVotes();
         }
 
         // Highlight selected candidate
         function highlightSelectedCandidate(categoryIndex, candidateName) {
-            const cards = document.querySelectorAll('.candidate-card');
-            cards.forEach(card => {
-                card.classList.remove('selected');
-                if (card.querySelector('.candidate-name').textContent === candidateName) {
-                    card.classList.add('selected');
+            const options = document.querySelectorAll('.candidate-option');
+            options.forEach(option => {
+                option.classList.remove('selected');
+                if (option.querySelector('.candidate-name').textContent === candidateName) {
+                    option.classList.add('selected');
                 }
             });
         }
 
         // Navigation functions
         function nextCategory() {
-            if (currentCategoryIndex < awardCategories.length - 1) {
+            if (currentCategoryIndex < activeCategories.length - 1) {
                 currentCategoryIndex++;
                 loadCurrentCategory();
+            } else {
+                showSubmitSection();
             }
         }
 
@@ -586,34 +702,28 @@
             }
         }
 
-        // Update progress and submit section
+        // Update progress
         function updateProgress() {
             const votedCount = Object.keys(votes).length;
-            const progress = (votedCount / awardCategories.length) * 100;
+            const progress = (votedCount / activeCategories.length) * 100;
             
             document.getElementById('progressFill').style.width = `${progress}%`;
             document.getElementById('progressText').textContent = 
-                `Category ${currentCategoryIndex + 1} of ${awardCategories.length} • ${votedCount}/${awardCategories.length} voted`;
-            
-            updateSubmitSection();
+                `Category ${currentCategoryIndex + 1} of ${activeCategories.length} • ${votedCount}/${activeCategories.length} voted`;
         }
 
-        // Update submit section visibility
-        function updateSubmitSection() {
-            const submitSection = document.getElementById('submitSection');
-            const totalVotes = Object.keys(votes).length;
-            
-            if (totalVotes > 0 && !hasVoted) {
-                submitSection.style.display = 'block';
-            } else {
-                submitSection.style.display = 'none';
-            }
-            
-            document.getElementById('votesCount').textContent = totalVotes;
+        // Show submit section
+        function showSubmitSection() {
+            document.getElementById('submitSection').classList.add('active');
         }
 
-        // Submit votes - SIMPLE VERSION (Works offline)
+        // Submit votes
         async function submitVotes() {
+            if (votingEnded || hasVoted) {
+                alert('Voting is not allowed at this time.');
+                return;
+            }
+
             const totalVotes = Object.keys(votes).length;
             
             if (totalVotes === 0) {
@@ -621,160 +731,163 @@
                 return;
             }
 
-            // Show loading state
-            const submitButton = document.getElementById('submitButton');
-            submitButton.innerHTML = '<div class="loading"></div> Submitting...';
-            submitButton.disabled = true;
-
-            // Save the final votes locally (ALWAYS WORKS)
-            const voteData = {
-                timestamp: new Date().toISOString(),
-                votes: votes,
-                totalCategories: totalVotes,
-                submittedAt: new Date().toLocaleString(),
-                voterId: 'voter_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
-            };
-            localStorage.setItem('finalVotes', JSON.stringify(voteData));
+            let successCount = 0;
+            const timestamp = new Date().toISOString();
             
-            // Try to send to Google Sheets if connected
-            if (googleSheetsConnected) {
-                const success = await submitToGoogleSheets(voteData);
-                if (success) {
-                    alert(`✅ SUCCESS! ${totalVotes} votes submitted to Google Sheets!\n\nYou can check your Google Sheet to see the data.`);
-                } else {
-                    alert(`✅ SUCCESS! ${totalVotes} votes submitted locally!\n\n(Google Sheets connection failed - but votes are saved locally)`);
-                }
-            } else {
-                // Show success message for offline mode
-                alert(`✅ SUCCESS! ${totalVotes} votes submitted locally!\n\nVotes are saved on this device.`);
+            for (const [categoryIndex, candidateName] of Object.entries(votes)) {
+                const success = await saveVoteToSheet(
+                    activeCategories[categoryIndex], 
+                    candidateName, 
+                    timestamp
+                );
+                if (success) successCount++;
             }
-            
-            hasVoted = true;
-            localStorage.setItem('hasVoted', 'true');
-            showAlreadyVoted();
+
+            if (successCount > 0) {
+                // Mark as voted to prevent re-voting
+                hasVoted = true;
+                localStorage.setItem('hasVoted', 'true');
+                
+                alert(`✅ Success! ${successCount} votes submitted! Thank you for voting.`);
+                showAlreadyVoted();
+            } else {
+                alert(`⚠️ Votes could not be submitted. Please check internet connection.`);
+            }
         }
 
-        // Try to submit to Google Sheets (optional)
-        async function submitToGoogleSheets(voteData) {
+        // Save vote to Google Sheets
+        async function saveVoteToSheet(category, candidate, timestamp) {
+            const voteData = {
+                category: category,
+                candidate: candidate,
+                timestamp: timestamp
+            };
+            
             try {
-                // Format data for Google Sheets - SIMPLE FORMAT
-                const sheetsData = {
-                    voterId: voteData.voterId,
-                    timestamp: voteData.timestamp,
-                    totalVotes: voteData.totalCategories,
-                    votes: JSON.stringify(voteData.votes),
-                    categories: awardCategories.join(' | ')
-                };
-
-                console.log('Sending to Google Sheets:', sheetsData);
-
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'application/json',
                     },
-                    body: new URLSearchParams(sheetsData)
+                    body: JSON.stringify(voteData)
                 });
-
-                console.log('Google Sheets response status:', response.status);
-                const result = await response.text();
-                console.log('Google Sheets response:', result);
-
-                return response.ok;
+                return true;
             } catch (error) {
-                console.error('Google Sheets error:', error);
+                console.error('Failed to save vote:', error);
                 return false;
             }
         }
 
-        // Show already voted message
-        function showAlreadyVoted() {
-            document.getElementById('categoriesContainer').innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <i class="fas fa-check-circle" style="font-size: 4rem; color: #27ae60; margin-bottom: 20px;"></i>
-                    <h2 style="color: #27ae60;">Thank You For Voting!</h2>
-                    <p style="font-size: 1.2rem; margin-top: 10px;">You have successfully submitted your votes.</p>
-                    <p style="margin-top: 10px; color: #7f8c8d;">
-                        ${googleSheetsConnected ? '✅ Votes saved to Google Sheets' : '📱 Votes saved locally (offline mode)'}
-                    </p>
-                    <p style="margin-top: 10px; font-size: 0.9rem;">
-                        You voted in ${Object.keys(votes).length} categories
-                    </p>
-                </div>
-            `;
-            document.getElementById('submitSection').style.display = 'none';
-        }
-
-        // Save votes to localStorage
-        function saveVotes() {
-            localStorage.setItem('votes', JSON.stringify(votes));
-        }
-
-        // Admin Functions
+        // View All Votes (Mock function - in real implementation, you'd fetch from Google Sheets)
         function viewAllVotes() {
-            const voteData = JSON.parse(localStorage.getItem('finalVotes') || '{}');
-            if (!voteData.votes) {
-                alert('No votes submitted yet.');
-                return;
-            }
+            const modal = document.getElementById('voteResultsModal');
+            const content = document.getElementById('voteResultsContent');
             
-            let results = 'YOUR SUBMITTED VOTES:\n\n';
-            Object.entries(voteData.votes).forEach(([categoryIndex, candidate]) => {
-                results += `• ${awardCategories[categoryIndex]}: ${candidate}\n`;
+            // Mock data - in real implementation, fetch from Google Sheets
+            const mockVotes = {
+                "ISU Executive Board Member of the Year": [
+                    { candidate: "EL-KHADIRI MERYEME", votes: 15 },
+                    { candidate: "SOT FA ELIN", votes: 8 }
+                ],
+                "Most Dedicated Volunteer": [
+                    { candidate: "Michelle Okyerebea Asante", votes: 12 },
+                    { candidate: "Izzatullaev Musulmon", votes: 10 },
+                    { candidate: "PHIRI EMMANUEL", votes: 7 },
+                    { candidate: "Mozumder Aktia Pableha", votes: 5 },
+                    { candidate: "KUNGNE KALEUK STEEVE JOSUE", votes: 3 },
+                    { candidate: "CHAFAI ASMA", votes: 2 }
+                ],
+                "Most Popular Award (Female)": [
+                    { candidate: "EL-KHADIRI MERYEME", votes: 20 },
+                    { candidate: "Michelle Okyerebea Asante", votes: 18 },
+                    { candidate: "NIGINA", votes: 15 },
+                    { candidate: "Karshygayeva Aiym", votes: 12 },
+                    { candidate: "Kong Mengsean", votes: 8 },
+                    { candidate: "Kadyrova Kadiya Demirovna", votes: 5 }
+                ]
+            };
+
+            let html = '<p style="color: #7f8c8d; text-align: center; margin-bottom: 20px;">Note: This shows sample data. Real results are in Google Sheets.</p>';
+            
+            Object.entries(mockVotes).forEach(([category, candidates]) => {
+                html += `
+                    <div class="vote-category">
+                        <div class="vote-category-title">${category}</div>
+                        ${candidates.map((candidate, index) => `
+                            <div class="vote-candidate ${index === 0 ? 'winner' : ''}">
+                                ${index === 0 ? '🏆 ' : ''}${candidate.candidate} 
+                                <span style="float: right; color: #3498db; font-weight: bold;">${candidate.votes} votes</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
             });
-            
-            results += `\n📊 Total Categories: ${voteData.totalCategories}`;
-            results += `\n⏰ Submitted: ${voteData.submittedAt || voteData.timestamp}`;
-            results += `\n🌐 Status: ${googleSheetsConnected ? 'Connected to Google Sheets' : 'Offline Mode'}`;
-            
-            alert(results);
+
+            content.innerHTML = html;
+            modal.style.display = 'block';
         }
 
-        function resetForNewVoter() {
-            if (confirm('Start new voting session? This will clear current votes.')) {
-                votes = {};
-                currentCategoryIndex = 0;
-                hasVoted = false;
-                localStorage.removeItem('hasVoted');
-                localStorage.removeItem('votes');
-                updateProgress();
-                loadCurrentCategory();
-                alert('✅ Ready for new voter! Previous votes cleared.');
-            }
+        // Close modal
+        function closeModal() {
+            document.getElementById('voteResultsModal').style.display = 'none';
         }
 
+        // Clear all votes from localStorage
         function clearAllVotes() {
-            if (confirm('Are you sure you want to clear ALL votes? This action cannot be undone.')) {
+            if (confirm('⚠️ ARE YOU SURE? This will clear ALL voting data including who has voted!')) {
+                localStorage.removeItem('hasVoted');
+                localStorage.removeItem('isu_votes');
                 votes = {};
-                localStorage.removeItem('votes');
-                localStorage.removeItem('finalVotes');
-                updateProgress();
+                hasVoted = false;
+                currentCategoryIndex = 0;
                 loadCurrentCategory();
-                alert('All votes have been cleared.');
+                updateProgress();
+                alert('All voting data has been cleared!');
             }
         }
 
-        function downloadVotes() {
-            const voteData = JSON.parse(localStorage.getItem('finalVotes') || '{}');
-            if (!voteData.votes) {
-                alert('No votes to download.');
-                return;
+        // Extend voting deadline
+        function extendDeadline() {
+            const extraDays = prompt('How many extra days to extend voting?', '1');
+            if (extraDays && !isNaN(extraDays)) {
+                VOTING_DEADLINE = new Date(Date.now() + (VOTING_DURATION_DAYS + parseInt(extraDays)) * 24 * 60 * 60 * 1000).getTime();
+                alert(`Voting extended by ${extraDays} day(s)!`);
+                checkDeadline();
             }
-            
-            const dataStr = JSON.stringify(voteData, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = 'isu_votes.json';
-            link.click();
         }
 
-        // Start the application
-        window.onload = init;
+        // View voting statistics
+        function viewVotingStats() {
+            const totalVoters = Object.keys(JSON.parse(localStorage.getItem('isu_votes') || '{}')).length;
+            const hasVotedCount = localStorage.getItem('hasVoted') ? 1 : 0;
+            
+            alert(`📊 Voting Statistics:\n\n• Total Votes Submitted: ${totalVoters}\n• Current Device Voted: ${hasVotedCount ? 'Yes' : 'No'}\n• Voting Deadline: ${new Date(VOTING_DEADLINE).toLocaleString()}`);
+        }
+
+        // Admin functions
+        function viewLiveResults() {
+            window.open('https://docs.google.com/spreadsheets/d/1GeiFcvRSwdyUa5Xak4LjfwLA1M-6313gR0YPcpm3Hk4/edit', '_blank');
+        }
+
+        // Initialize
+        window.addEventListener('load', function() {
+            checkDeadline();
+            loadCurrentCategory();
+            updateProgress();
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('voteResultsModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>
+
 
 
 
